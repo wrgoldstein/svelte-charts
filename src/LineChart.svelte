@@ -1,6 +1,7 @@
 <script>
 	import _ from "lodash"
 	import * as d3 from "d3"
+
 	export let data
 
 	function getTicks (count, max) {
@@ -21,16 +22,30 @@
 	let x = d3.scaleLinear().domain(d3.extent(data.rows, r => r[0])).range([0, width])
 	let x_ticks = x.ticks()
 	
-	// calc y axis
-	let y = d3.scaleLinear().domain([d3.max(data.rows, r => r[1]), 0]).range([0, height])
-	let y_ticks = y.ticks()
-	
-	// calc chart line(s)
-	let line = d3.line()
-		.x(function(d) { return x(d[0]); })
-		.y(function(d) { return y(d[1]); });
+	let y_column_indices = data.y_columns.map(c => data.columns.indexOf(c))
 
-	let d = line(data.rows)
+	// calc y axis
+	let flattened_y = _.flatten(data.rows.map(row => {
+		return row.filter((_, i) => y_column_indices.includes(i))
+	}))
+	let mega_y = d3.scaleLinear()
+		.domain([d3.max(flattened_y), 0])
+		.range([0, height])
+	let y_ticks = mega_y.ticks()
+
+	// 	data = {
+	// 	columns: data.columns,
+	// 	rows: data.rows,
+	// 	x_column: 'a',
+	// 	y_columns: ['b', 'c']
+	// }
+
+	let x_getter = d => x(d[data.columns.indexOf(data.x_column)])
+
+	let lines = y_column_indices.map(i => {
+		let y = d3.scaleLinear().domain([d3.max(data.rows, r => r[i]), 0]).range([0, height])
+		return d3.line().x(x_getter).y(d => y(d[i]))
+	})
 </script>
 
 <div class="container">
@@ -41,7 +56,11 @@
 			height: {height}px;
 		">
 		<svg width={width} height={height}>
-			<path d={d} />
+			{#each lines as line, i}
+				<g style="stroke: {d3.schemeTableau10[i]};">
+					<path d={line(data.rows)} />
+				</g>
+			{/each}
 		</svg>
 		<div class="x-axis">
 			{#each x_ticks as tick}
@@ -66,11 +85,12 @@
 		position: relative;
 		padding-left: 40px;
 		padding-bottom: 40px;
+		margin-right: 40px;
+		margin-top: 40px;
 	}
 
 	svg {
 		fill: none;
-		stroke: #33C7FF;
 		display: block;
 		stroke-width: 2px;
 		border-left: 1px solid black;

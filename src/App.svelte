@@ -15,17 +15,24 @@
 	Implement automatic axes generation:
 		- categorical
 		- time series
-		- numerical
-
-	
+		- numerical	
 	*/
 
+	// raw from e.g. an api
 	let data = {
-		columns: ['a', 'b'],
-		number_columns: ['a', 'b'],
+		columns: ['a', 'b', 'c'],
+		number_columns: ['a', 'b', 'd'],
 		non_number_columns: [],
 		data_types: ['number', 'number'],
-		rows: _.range(15).map(v => [v, 10*Math.random()])
+		rows: _.range(15).map(v => [v, 10*Math.random(), 10*Math.random()])
+	}
+
+	// prepared for a chart
+	data = {
+		columns: data.columns,
+		rows: data.rows,
+		x_column: 'a',
+		y_columns: ['b', 'c']
 	}
 
 	import LineChart from "./LineChart.svelte"
