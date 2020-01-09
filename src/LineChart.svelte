@@ -1,5 +1,6 @@
 <script>
 	import _ from "lodash"
+	import * as d3 from "d3"
 	export let data
 
 	function getTicks (count, max) {
@@ -14,51 +15,53 @@
 	let margin = 20
 
 	window._ = _
-	console.log(data.rows)
+	window.d3 = d3
+
 	// calc x axis
-	let max_x = _.max(data.rows.map(r => r[0]))
-	let x = val => margin + val/max_x * (width-margin)
-	let x_ticks = getTicks(11, max_x)
+	let x = d3.scaleLinear().domain(d3.extent(data.rows, r => r[0])).range([0, width])
+	let x_ticks = x.ticks()
 	
 	// calc y axis
-	let max_y = _.max(data.rows.map(r => r[1]))
-	let y = val => margin + val/max_y * (height-2*margin)
-	let y_ticks = getTicks(11, max_y)
+	let y = d3.scaleLinear().domain([d3.max(data.rows, r => r[1]), 0]).range([0, height])
+	let y_ticks = y.ticks()
 	
 	// calc chart line(s)
-	let [start, ...rest] = data.rows	
-	let d = `
-          M${x(start[0])} ${y(start[1])} 
-          ${data.rows.map(d => {
-              return `L${x(d[0])} ${y(d[1])}`;
-          }).join(' ')}
-		`;
-		
+	let line = d3.line()
+		.x(function(d) { return x(d[0]); })
+		.y(function(d) { return y(d[1]); });
+
+	let d = line(data.rows)
 </script>
 
-<div 
-    class="LineChart" 
-    style="
-        width: {width}px;
-        height: {height}px;
-    ">
-	<svg width={width} height={height}>
-		<path d={d} />
-	</svg>
-	<div class="x-axis">
-		{#each x_ticks as tick}
-			<div data-value={tick}/>
-		{/each}
-	</div>
-	<div class="y-axis">
-		{#each y_ticks as tick}
-			<div data-value={tick}/>
-		{/each}
+<div class="container">
+	<div 
+		class="LineChart" 
+		style="
+			width: {width}px;
+			height: {height}px;
+		">
+		<svg width={width} height={height}>
+			<path d={d} />
+		</svg>
+		<div class="x-axis">
+			{#each x_ticks as tick}
+				<div data-value={tick}/>
+			{/each}
+		</div>
+		<div class="y-axis">
+			{#each y_ticks as tick}
+				<div data-value={tick}/>
+			{/each}
+		</div>
 	</div>
 </div>
 
-
 <style>
+	.container {
+		padding: 1em;
+		display: inline-block;
+		background-color: aliceblue;
+	}
 	.LineChart {
 		position: relative;
 		padding-left: 40px;
@@ -96,15 +99,16 @@
 		align-items: flex-end;
 	}
 	.y-axis > div::after {
-		margin-right: 4px;
-		content: attr(data-value);
-		color: black;
+		font-size: 10px;
+		content: attr(data-value)"╶";
+		color: black;		
 		display: inline-block;
 	}
 	.x-axis > div::after {
-		margin-top: 4px;
+		font-size: 10px;
+		width: 5px;
 		display: inline-block;
-		content: attr(data-value);
+		content: "╵ "attr(data-value);
 		color: black;
 	}
 </style>

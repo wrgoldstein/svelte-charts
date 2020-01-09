@@ -25,7 +25,7 @@
 		number_columns: ['a', 'b'],
 		non_number_columns: [],
 		data_types: ['number', 'number'],
-		rows: _.range(100).map(v => [v, Math.random()])
+		rows: _.range(15).map(v => [v, 10*Math.random()])
 	}
 
 	import LineChart from "./LineChart.svelte"
