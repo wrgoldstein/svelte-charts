@@ -9,13 +9,25 @@
 		- stacked bar charts
 		- grouped bar charts
 		- fill bar charts (normalized stacked)
-		- line charts
+		- line charts{
+    data: {
+        datasets: [{
+            data: [1,2,3,4]
+        }]
+    }
+}
 		- scatter plot
 	
 	Implement automatic axes generation:
 		- categorical
 		- time series
-		- numerical	
+		- numerical	{
+    data: {
+        datasets: [{
+            data: [1,2,3,4]
+        }]
+    }
+}
 	*/
 
 	// raw from e.g. an api
@@ -35,6 +47,21 @@
 		y_columns: ['b', 'c']
 	}
 
+	data = {
+		labels: ['Kangaroo', 'Marmit', 'Fangs'],
+		datasets: [{
+			label: "Series A",
+			data: [1,2,3]
+		}, {
+			label: "Series B",
+			data: [3,2,1]
+		},	{
+			label: "Series C",
+			data: [2,5,3]
+		}
+		]
+	}
+
 	import LineChart from "./LineChart.svelte"
 	import BarChart from "./BarChart.svelte"
 </script>
@@ -43,7 +70,7 @@
 	<h1>Hello {name}!</h1>
 	<pre>Let's make a charting library</pre>
 	
-	<LineChart {data}/>
+	<!-- <LineChart {data}/> -->
 	<BarChart {data}/>
 </main>
 
