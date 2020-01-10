@@ -36,6 +36,7 @@
 	}
 
 	import LineChart from "./LineChart.svelte"
+	import BarChart from "./BarChart.svelte"
 </script>
 
 <main>
@@ -43,6 +44,7 @@
 	<pre>Let's make a charting library</pre>
 	
 	<LineChart {data}/>
+	<BarChart {data}/>
 </main>
 
 <style>
