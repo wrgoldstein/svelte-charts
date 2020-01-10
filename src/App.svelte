@@ -89,10 +89,6 @@
 		font-weight: 100;
 	}
 
-	h1:hover:after{
-		content: 'foooo';
-	}
-
 	@media (min-width: 640px) {
 		main {
 			max-width: none;
