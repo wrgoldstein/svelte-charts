@@ -29,7 +29,7 @@
 		return row.filter((_, i) => y_column_indices.includes(i))
 	}))
 	let mega_y = d3.scaleLinear()
-		.domain([d3.max(flattened_y), 0])
+		.domain(d3.extent(flattened_y).reverse())
 		.range([0, height])
 	let y_ticks = mega_y.ticks()
 

@@ -28,9 +28,28 @@
 
 	// calc y axis
 	let y = d3.scaleLinear().domain([d3.max(data.rows, r => r[1]), 0]).range([0, height])
-	let y_ticks = y.ticks()
+    let y_ticks = y.ticks()
+    let bandwidth = x.bandwidth()
 
     let x_getter = d => x(d[data.columns.indexOf(data.x_column)])
+
+    function mouseover(d) {
+        return (e) => {
+            console.log(d)
+            tooltip.innerHTML = `
+                x: ${d[0]}
+                y: ${d[1].toFixed(3)}
+            `;
+            tooltip.style = `
+                display: inline;
+                left: ${e.x+bandwidth}px;
+                top: ${e.y}px;`
+        }        
+    }
+
+    function mouseout() {
+        tooltip.style = "display: none;"
+    }
 
 </script>        
 
@@ -44,9 +63,11 @@
 		<svg width={width} height={height}>
 			{#each data.rows as d}
                 <rect 
+                    on:mouseover={mouseover(d)}
+                    on:mouseout={mouseout}
                     x={x_getter(d)} 
                     y={y(d[1])}
-                    width={x.bandwidth()}
+                    width={bandwidth}
                     height={height - y(d[1])}
                 ></rect>
 			{/each}
@@ -62,6 +83,7 @@
 			{/each}
 		</div>
 	</div>
+    <div bind:this={tooltip} class="tooltip"></div>
 </div>
 
 <style>
@@ -90,6 +112,11 @@
 
     rect {
         fill: blueviolet;
+    }
+
+    rect:hover:after {
+        fill: red;
+        
     }
 
 	.x-axis {
@@ -126,4 +153,17 @@
 		content: "╵ "attr(data-value);
 		color: black;
 	}
+
+    .tooltip {
+        display: none;
+        position: absolute;
+        text-align: center;
+        width: 10em;
+        height: 12px;
+        padding: 8px;
+        margin-top: -20px;
+        font: 10px sans-serif;
+        background: #ddd;
+        pointer-events: none;
+    }
 </style>

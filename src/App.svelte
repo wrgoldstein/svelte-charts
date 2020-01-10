@@ -24,7 +24,7 @@
 		number_columns: ['a', 'b', 'd'],
 		non_number_columns: [],
 		data_types: ['number', 'number'],
-		rows: _.range(15).map(v => [v, 10*Math.random(), 10*Math.random()])
+		rows: _.range(35).map(v => [v, 10*Math.random(), 10*Math.random()])
 	}
 
 	// prepared for a chart
@@ -60,6 +60,10 @@
 		text-transform: uppercase;
 		font-size: 4em;
 		font-weight: 100;
+	}
+
+	h1:hover:after{
+		content: 'foooo';
 	}
 
 	@media (min-width: 640px) {
