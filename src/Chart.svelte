@@ -1,45 +1,37 @@
 <script>
     import _ from "lodash"
     import {onMount} from "svelte"
-	import * as d3 from "d3"
+    import * as d3 from "d3"
+    import geoms from "./geom"
+    import * as scales from "./scales.js"
 
-    export let data
+    export let kind, data
 
     let tooltip, xaxis, yaxis
 
     let css_id = Math.random().toString(36).substr(2, 5)
 
-	function getTicks (count, max) {
-		return [...Array(count).keys()].map(d => {
-			return (max / (count - 1) * parseInt(d)).toFixed(2)
-		});
-	}
-
 	// setup chart
 	let width = 500
 	let height = 300
-	let margin = {top: 10, right: 10, bottom: 20, left: 40}
+    let margin = {top: 10, right: 10, bottom: 20, left: 40}
+    
+    let params = { width, height, margin }
 
 	window._ = _
-	window.d3 = d3
+    window.d3 = d3
 
-	// calc y axis
-    let y = d3.scaleLinear()
-                .domain(d3.extent(_.flatMap(data.datasets, (ds) => ds.data)).reverse()).nice()
-                .range([margin.top, height-margin.bottom])
-    let y_ticks = y.ticks()
+    // calc y axis
+    let sc, y, y_ticks, x, x_ticks
 
-    let x0 = d3.scaleBand()
-                .domain(data.labels)
-                .rangeRound([margin.left, width-margin.right], .1)
-                .paddingInner(0.1)
+    $:{
+        sc = new scales[kind](data, params)
+        y = sc.y()
+        y_ticks = y.ticks()
 
-    let x1 = d3.scaleBand()
-                .domain(data.datasets.map(d => d.label))
-                .rangeRound([0, x0.bandwidth()])
-                .padding(0.05)
-
-    let x_ticks = data.labels
+        x = sc.x()
+        x_ticks = data.labels
+    }
 
     function mouseover(i) {
         return (e) => {
@@ -47,7 +39,7 @@
             tooltip.innerHTML = `<div style='display: flex; flex-direction: column;'>${innerHTML}</div>`
             tooltip.style = `
                 display: inline-block;
-                left: ${e.x+x1.bandwidth()}px;
+                left: ${e.x+10}px;
                 top: ${e.y}px;`
         }        
     }
@@ -57,7 +49,7 @@
     }
 
     onMount(() => {
-        d3.axisBottom(x0)(d3.select(`#xaxis-${css_id}`))
+        d3.axisBottom(x[0])(d3.select(`#xaxis-${css_id}`))
         d3.axisLeft(y)(d3.select(`#yaxis-${css_id}`))
     })
 </script>        
@@ -70,22 +62,7 @@
 			height: {height}px;
 		">
 		<svg width={width} height={height}>
-			{#each data.labels as label, i}
-                <g transform="translate({x0(label)},0)"
-                    on:mouseover={mouseover(i)}
-                    on:mouseout={mouseout}
-                >
-                    {#each data.datasets as ds, j}
-                        <rect 
-                            style="fill: {d3.schemeTableau10[j]}"
-                            x={x1(ds.label)}
-                            y={y(ds.data[i])}
-                            width={x1.bandwidth()}
-                            height={height - margin.bottom - y(ds.data[i])}
-                        ></rect>
-                    {/each}
-                </g>
-			{/each}
+            <svelte:component this={geoms[kind]} {data} {params} {mouseover} {mouseout} {x} {y}/>
             <g id="xaxis-{css_id}" class="axis" transform="translate(0, {height - margin.bottom})"></g>
             <g id="yaxis-{css_id}" class="axis" transform="translate({margin.left}, 0)"></g>
 		</svg>
@@ -112,7 +89,13 @@
 		fill: none;
         stroke-linecap: butt;
 		display: block;
+        stroke-width: 3px;
+        stroke-linejoin: round;
 	}
+
+    .axis {
+        stroke-width: 1px;
+    }
 
     .tooltip {
         display: none;

@@ -26,7 +26,7 @@
 	let x_ticks = x.ticks()
 	let y = d3.scaleLinear()
 		.domain(d3.extent(_.flatten(d3.extent(data.datasets, (ds) => ds.data)))).nice()
-		.range([margin.top, height - margin.bottom])
+		.range([height - margin.bottom, margin.top])
 		
 	let line = d3.line().x((d,i) => x(data.labels[i])).y(d => y(d))
 	let y_ticks = y.ticks()

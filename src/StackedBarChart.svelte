@@ -25,19 +25,14 @@
 
 	// calc y axis
     let y = d3.scaleLinear()
-                .domain(d3.extent(_.flatMap(data.datasets, (ds) => ds.data)).reverse()).nice()
+                .domain([d3.max(data.labels.map((l, i) => _.sum(data.datasets.map(ds => ds.data[i])))),0]).nice()
                 .range([margin.top, height-margin.bottom])
     let y_ticks = y.ticks()
 
-    let x0 = d3.scaleBand()
+    let x = d3.scaleBand()
                 .domain(data.labels)
                 .rangeRound([margin.left, width-margin.right], .1)
                 .paddingInner(0.1)
-
-    let x1 = d3.scaleBand()
-                .domain(data.datasets.map(d => d.label))
-                .rangeRound([0, x0.bandwidth()])
-                .padding(0.05)
 
     let x_ticks = data.labels
 
@@ -47,7 +42,7 @@
             tooltip.innerHTML = `<div style='display: flex; flex-direction: column;'>${innerHTML}</div>`
             tooltip.style = `
                 display: inline-block;
-                left: ${e.x+x1.bandwidth()}px;
+                left: ${e.x+x.bandwidth()}px;
                 top: ${e.y}px;`
         }        
     }
@@ -57,9 +52,13 @@
     }
 
     onMount(() => {
-        d3.axisBottom(x0)(d3.select(`#xaxis-${css_id}`))
+        d3.axisBottom(x)(d3.select(`#xaxis-${css_id}`))
         d3.axisLeft(y)(d3.select(`#yaxis-${css_id}`))
     })
+
+    function offSet(i,j){
+        return _.sum(data.datasets.map((ds,k) => k < j ? ds.data[i] : 0))
+    }
 </script>        
 
 <div class="container">
@@ -71,16 +70,16 @@
 		">
 		<svg width={width} height={height}>
 			{#each data.labels as label, i}
-                <g transform="translate({x0(label)},0)"
+                <g transform="translate({x(label)},0)"
                     on:mouseover={mouseover(i)}
                     on:mouseout={mouseout}
                 >
                     {#each data.datasets as ds, j}
                         <rect 
                             style="fill: {d3.schemeTableau10[j]}"
-                            x={x1(ds.label)}
-                            y={y(ds.data[i])}
-                            width={x1.bandwidth()}
+                            x={x(ds.label)}
+                            y={y(ds.data[i] + offSet(i,j))}
+                            width={x.bandwidth()}
                             height={height - margin.bottom - y(ds.data[i])}
                         ></rect>
                     {/each}

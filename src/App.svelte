@@ -2,33 +2,6 @@
 	import _ from "lodash"
 	export let name;
 
-	/*
-	GOAL
-	-------
-	Implement 4 kinds of chart:
-		- stacked bar charts
-		- grouped bar charts
-		- fill bar charts (normalized stacked)
-		- line charts{
-    data: {
-        datasets: [{
-            data: [1,2,3,4]
-        }]
-    }
-}
-		- scatter plot
-	
-	Implement automatic axes generation:
-		- categorical
-		- time series
-		- numerical	{
-    data: {
-        datasets: [{
-            data: [1,2,3,4]
-        }]
-    }
-}
-	*/
 
 	// raw from e.g. an api
 	let data = {
@@ -39,39 +12,35 @@
 		rows: _.range(35).map(v => [v, 10*Math.random(), 10*Math.random()])
 	}
 
-	// prepared for a chart
-	data = {
-		columns: data.columns,
-		rows: data.rows,
-		x_column: 'a',
-		y_columns: ['b', 'c']
-	}
-
 	data = {
 		labels: _.range(15),
 		datasets: [{
 			label: "Series A",
-			data: _.range(15).map(d => Math.random()*10)
+			data: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
 		}, {
 			label: "Series B",
 			data: _.range(15).map(d => Math.random()*10)
 		},	{
 			label: "Series C",
 			data: _.range(15).map(d => Math.random()*10)
-		}
-		]
+		}]
 	}
 
-	import LineChart from "./LineChart.svelte"
-	import BarChart from "./BarChart.svelte"
+	import Chart from "./Chart.svelte"
+
+	let kind = 'Line'
 </script>
 
 <main>
 	<h1>Hello {name}!</h1>
 	<pre>Let's make a charting library</pre>
 	
-	<LineChart {data}/>
-	<BarChart {data}/>
+	<Chart {data} {kind}/>
+	<select bind:value={kind}>
+		<option value='GroupedBar'>Bar</option>
+		<option value='StackedBar'>Stacked bar</option>
+		<option value='Line'>Line</option>
+	</select>
 </main>
 
 <style>
