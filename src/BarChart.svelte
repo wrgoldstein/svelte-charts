@@ -7,6 +7,8 @@
 
     let tooltip, xaxis, yaxis
 
+    let css_id = Math.random().toString(36).substr(2, 5)
+
 	function getTicks (count, max) {
 		return [...Array(count).keys()].map(d => {
 			return (max / (count - 1) * parseInt(d)).toFixed(2)
@@ -32,8 +34,6 @@
                 .rangeRound([margin.left, width-margin.right], .1)
                 .paddingInner(0.1)
 
-    window.x0 = x0
-
     let x1 = d3.scaleBand()
                 .domain(data.datasets.map(d => d.label))
                 .rangeRound([0, x0.bandwidth()])
@@ -57,14 +57,14 @@
     }
 
     onMount(() => {
-        d3.axisBottom(x0)(d3.select("#xaxis"))
-        d3.axisLeft(y)(d3.select("#yaxis"))
+        d3.axisBottom(x0)(d3.select(`#xaxis-${css_id}`))
+        d3.axisLeft(y)(d3.select(`#yaxis-${css_id}`))
     })
 </script>        
 
 <div class="container">
 	<div 
-		class="LineChart" 
+		class="Chart" 
 		style="
 			width: {width}px;
 			height: {height}px;
@@ -86,8 +86,8 @@
                     {/each}
                 </g>
 			{/each}
-            <g id="xaxis" class="axis" transform="translate(0, {height - margin.bottom})"></g>
-            <g id="yaxis" class="axis" transform="translate({margin.left}, 0)"></g>
+            <g id="xaxis-{css_id}" class="axis" transform="translate(0, {height - margin.bottom})"></g>
+            <g id="yaxis-{css_id}" class="axis" transform="translate({margin.left}, 0)"></g>
 		</svg>
 	</div>
     <div bind:this={tooltip} class="tooltip"></div>
@@ -100,7 +100,7 @@
 		background-color: aliceblue;
 	}
 
-	.LineChart {
+	.Chart {
 		position: relative;
 		padding-left: 40px;
 		padding-bottom: 40px;

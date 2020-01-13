@@ -48,16 +48,16 @@
 	}
 
 	data = {
-		labels: ['Kangaroo', 'Marmit', 'Fangs'],
+		labels: _.range(15),
 		datasets: [{
 			label: "Series A",
-			data: [1,2,3]
+			data: _.range(15).map(d => Math.random()*10)
 		}, {
 			label: "Series B",
-			data: [3,2,1]
+			data: _.range(15).map(d => Math.random()*10)
 		},	{
 			label: "Series C",
-			data: [2,5,3]
+			data: _.range(15).map(d => Math.random()*10)
 		}
 		]
 	}
@@ -70,7 +70,7 @@
 	<h1>Hello {name}!</h1>
 	<pre>Let's make a charting library</pre>
 	
-	<!-- <LineChart {data}/> -->
+	<LineChart {data}/>
 	<BarChart {data}/>
 </main>
 

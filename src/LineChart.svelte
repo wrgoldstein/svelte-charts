@@ -1,8 +1,11 @@
 <script>
 	import _ from "lodash"
 	import * as d3 from "d3"
+	import {onMount} from "svelte"
 
 	export let data
+
+	let css_id = Math.random().toString(36).substr(2, 5)
 
 	function getTicks (count, max) {
 		return [...Array(count).keys()].map(d => {
@@ -13,39 +16,28 @@
 	// setup chart
 	let width = 500
 	let height = 300
-	let margin = 20
+	let margin = {top: 10, right: 10, bottom: 20, left: 40}
 
 	window._ = _
 	window.d3 = d3
 
 	// calc x axis
-	let x = d3.scaleLinear().domain(d3.extent(data.rows, r => r[0])).range([0, width])
+	let x = d3.scaleLinear().domain(d3.extent(data.labels)).range([margin.left, width - margin.right])
 	let x_ticks = x.ticks()
-	
-	let y_column_indices = data.y_columns.map(c => data.columns.indexOf(c))
+	let y = d3.scaleLinear()
+		.domain(d3.extent(_.flatten(d3.extent(data.datasets, (ds) => ds.data)))).nice()
+		.range([margin.top, height - margin.bottom])
+		
+	let line = d3.line().x((d,i) => x(data.labels[i])).y(d => y(d))
+	let y_ticks = y.ticks()
 
-	// calc y axis
-	let flattened_y = _.flatten(data.rows.map(row => {
-		return row.filter((_, i) => y_column_indices.includes(i))
-	}))
-	let mega_y = d3.scaleLinear()
-		.domain(d3.extent(flattened_y).reverse())
-		.range([0, height])
-	let y_ticks = mega_y.ticks()
+	window.x = x
+	window.y = y
 
-	// 	data = {
-	// 	columns: data.columns,
-	// 	rows: data.rows,
-	// 	x_column: 'a',
-	// 	y_columns: ['b', 'c']
-	// }
-
-	let x_getter = d => x(d[data.columns.indexOf(data.x_column)])
-
-	let lines = y_column_indices.map(i => {
-		let y = d3.scaleLinear().domain([d3.max(data.rows, r => r[i]), 0]).range([0, height])
-		return d3.line().x(x_getter).y(d => y(d[i]))
-	})
+	onMount(() => {
+        d3.axisBottom(x)(d3.select(`#xaxis-${css_id}`))
+        d3.axisLeft(y)(d3.select(`#yaxis-${css_id}`))
+    })
 </script>
 
 <div class="container">
@@ -56,22 +48,14 @@
 			height: {height}px;
 		">
 		<svg width={width} height={height}>
-			{#each lines as line, i}
+			{#each data.datasets as ds, i}
 				<g style="stroke: {d3.schemeTableau10[i]};">
-					<path d={line(data.rows)} />
+					<path d={line(ds.data)} />
 				</g>
 			{/each}
+			<g id="xaxis-{css_id}" class="axis" transform="translate(0, {height - margin.bottom})"></g>
+			<g id="yaxis-{css_id}" class="axis" transform="translate({margin.left}, 0)"></g>
 		</svg>
-		<div class="x-axis">
-			{#each x_ticks as tick}
-				<div data-value={tick}/>
-			{/each}
-		</div>
-		<div class="y-axis">
-			{#each y_ticks as tick}
-				<div data-value={tick}/>
-			{/each}
-		</div>
 	</div>
 </div>
 
@@ -92,43 +76,10 @@
 	svg {
 		fill: none;
 		display: block;
-		stroke-width: 2px;
-		border-left: 1px solid black;
-		border-bottom: 1px solid black;
+		stroke-width: 3px;
 	}
 
-	.x-axis {
-		position: absolute;
-		bottom: 0;
-		height: 40px;
-		left: 40px;
-		right: 0;
-		display: flex;
-		justify-content: space-between;
-	}
-
-	.y-axis {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 40px;
-		bottom: 40px;
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-		align-items: flex-end;
-	}
-	.y-axis > div::after {
-		font-size: 10px;
-		content: attr(data-value)"╶";
-		color: black;		
-		display: inline-block;
-	}
-	.x-axis > div::after {
-		font-size: 10px;
-		width: 5px;
-		display: inline-block;
-		content: "╵ "attr(data-value);
-		color: black;
+	.axis {
+		stroke-width: 1px;
 	}
 </style>
