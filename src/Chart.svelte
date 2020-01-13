@@ -35,7 +35,17 @@
 
     function mouseover(i) {
         return (e) => {
-            let innerHTML = data.datasets.map(d => `<span>${d.label}: ${d.data[i].toFixed(3)}</span>`).join("\n")
+            let innerHTML = data.datasets.map((d,m) => 
+                `<span style='display: flex;'>
+                    <div style='
+                        background-color: ${d3.schemeTableau10[m]}; 
+                        width: 10px; 
+                        height: auto;
+                        margin: 1px; 
+                        margin-right: 4px;'></div>
+                    ${d.label}: ${d.data[i].toFixed(3)}
+                </span>`
+            ).join("\n")
             tooltip.innerHTML = `<div style='display: flex; flex-direction: column;'>${innerHTML}</div>`
             tooltip.style = `
                 display: inline-block;

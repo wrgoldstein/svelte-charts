@@ -39,7 +39,7 @@ export class Line {
     }
 
     y(){
-        let [lower, upper] = d3.extent(_.flatten(d3.extent(this.data.datasets, (ds) => ds.data)))
+        let [lower, upper] = d3.extent(_.flatMap(this.data.datasets, (ds) => ds.data))
         lower = lower - Math.abs(.15*lower)
         upper = upper + Math.abs(.15*upper)
         return d3.scaleLinear()
@@ -78,3 +78,5 @@ export class StackedBar {
         return { 0: x } // allow for multiple scales for e.g. grouped bar charts
     }
 }
+
+export let Scatter = Line
