@@ -80,3 +80,4 @@ export class StackedBar {
 }
 
 export let Scatter = Line
+export let Table = Line

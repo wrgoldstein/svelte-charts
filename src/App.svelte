@@ -41,6 +41,7 @@
 		<option value='StackedBar'>Stacked bar</option>
 		<option value='Line'>Line</option>
 		<option value='Scatter'>Scatter</option>
+		<option value='Table'>Table</option>
 	</select>
 </main>
 

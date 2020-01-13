@@ -2,7 +2,7 @@
     import _ from "lodash"
     import {onMount} from "svelte"
     import * as d3 from "d3"
-    import geoms from "./geom"
+    import representations from "./representations"
     import * as scales from "./scales.js"
 
     export let kind, data
@@ -27,10 +27,7 @@
     $:{
         sc = new scales[kind](data, params)
         y = sc.y()
-        y_ticks = y.ticks()
-
         x = sc.x()
-        x_ticks = data.labels
     }
 
     function mouseover(i) {
@@ -71,11 +68,15 @@
 			width: {width}px;
 			height: {height}px;
 		">
-		<svg width={width} height={height}>
-            <svelte:component this={geoms[kind]} {data} {params} {mouseover} {mouseout} {x} {y}/>
-            <g id="xaxis-{css_id}" class="axis" transform="translate(0, {height - margin.bottom})"></g>
-            <g id="yaxis-{css_id}" class="axis" transform="translate({margin.left}, 0)"></g>
-		</svg>
+        {#if kind == 'Table'}
+            <svelte:component this={representations[kind]} {data} {params}/>
+        {:else}
+            <svg width={width} height={height}>
+                <svelte:component this={representations[kind]} {data} {params} {mouseover} {mouseout} {x} {y}/>
+                <g id="xaxis-{css_id}" class="axis" transform="translate(0, {height - margin.bottom})"></g>
+                <g id="yaxis-{css_id}" class="axis" transform="translate({margin.left}, 0)"></g>
+            </svg>
+        {/if}
 	</div>
     <div bind:this={tooltip} class="tooltip"></div>
 </div>
