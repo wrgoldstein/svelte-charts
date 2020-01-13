@@ -4,7 +4,10 @@
     import JSONFormatter from 'json-formatter-js'
 
     function render(value){
-        if (typeof(value) == 'object'){
+        if (value == undefined){
+            return ''
+        }
+        else if (typeof(value) == 'object'){
             const formatter = new JSONFormatter(value, 0)
             cell.appendChild(formatter.render())
             return ''

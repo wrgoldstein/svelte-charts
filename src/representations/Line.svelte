@@ -17,14 +17,16 @@ let line = d3.line().x((d,i) => x[0](data.labels[i])).y(d => y(d))
         <path d={line(ds.data)} />
     </g>
     {#each data.labels as label, j}
-        <circle 
-            style="fill: {d3.schemeTableau10[i]};" 
-            r={4} 
-            on:mouseover={mouseover(j)}
-            on:mouseout={mouseout}
-            cx={x[0](label)} 
-            cy={y(ds.data[j])}
-        >
-        </circle>
+        {#if ds.data[j]}
+            <circle 
+                style="fill: {d3.schemeTableau10[i]};" 
+                r={4} 
+                on:mouseover={mouseover(j)}
+                on:mouseout={mouseout}
+                cx={x[0](label)} 
+                cy={y(ds.data[j])}
+            >
+            </circle>
+        {/if}
     {/each}
 {/each}

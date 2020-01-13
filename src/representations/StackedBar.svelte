@@ -20,13 +20,15 @@ function offSet(i,j){
         on:mouseout={mouseout}
     >
         {#each data.datasets as ds, j}
-            <rect 
-                style="fill: {d3.schemeTableau10[j]}"
-                x={x[0](ds.label)}
-                y={y(ds.data[i] + offSet(i,j))}
-                width={x[0].bandwidth()}
-                height={params.height - params.margin.bottom - y(ds.data[i])}
-            ></rect>
+            {#if ds.data[i]}
+                <rect 
+                    style="fill: {d3.schemeTableau10[j]}"
+                    x={x[0](ds.label)}
+                    y={y(ds.data[i] + offSet(i,j))}
+                    width={x[0].bandwidth()}
+                    height={params.height - params.margin.bottom - y(ds.data[i])}
+                ></rect>
+            {/if}
         {/each}
     </g>
 {/each}

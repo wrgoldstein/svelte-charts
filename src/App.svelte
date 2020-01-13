@@ -13,16 +13,16 @@
 	}
 
 	data = {
-		labels: _.range(15),
+		labels: _.range(15).map(d => new Date(2000+d,1,1)),
 		datasets: [{
 			label: "Series A",
-			data: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+			data: [1,2,3,4,5,6,7,8,9,10,11,10,8,5,10]
 		}, {
 			label: "Series B",
-			data: _.range(15).map(d => Math.random()*10)
+			data: _.range(5).map(d => Math.random()*10)
 		},	{
 			label: "Series C",
-			data: _.range(15).map(d => Math.random()*10)
+			data: _.range(5).map(d => Math.random()*10)
 		}]
 	}
 

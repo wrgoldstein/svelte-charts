@@ -1,7 +1,7 @@
 <script>
     import _ from "lodash"
-    import {onMount} from "svelte"
     import * as d3 from "d3"
+    import Axes from "./Axes.svelte"
     import representations from "./representations"
     import * as scales from "./scales.js"
 
@@ -54,11 +54,6 @@
     function mouseout() {
         tooltip.style = "display: none;"
     }
-
-    onMount(() => {
-        d3.axisBottom(x[0])(d3.select(`#xaxis-${css_id}`))
-        d3.axisLeft(y)(d3.select(`#yaxis-${css_id}`))
-    })
 </script>        
 
 <div class="container">
@@ -73,8 +68,7 @@
         {:else}
             <svg width={width} height={height}>
                 <svelte:component this={representations[kind]} {data} {params} {mouseover} {mouseout} {x} {y}/>
-                <g id="xaxis-{css_id}" class="axis" transform="translate(0, {height - margin.bottom})"></g>
-                <g id="yaxis-{css_id}" class="axis" transform="translate({margin.left}, 0)"></g>
+                <Axes {kind} {x} {y} {css_id} {params}/>
             </svg>
         {/if}
 	</div>
@@ -103,10 +97,6 @@
         stroke-width: 3px;
         stroke-linejoin: round;
 	}
-
-    .axis {
-        stroke-width: 1px;
-    }
 
     .tooltip {
         display: none;

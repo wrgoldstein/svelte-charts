@@ -19,13 +19,15 @@ $: x1 = x.x1
         on:mouseout={mouseout}
     >
         {#each data.datasets as ds, j}
-            <rect 
-                style="fill: {d3.schemeTableau10[j]}"
-                x={x1(ds.label)}
-                y={y(ds.data[i])}
-                width={x1.bandwidth()}
-                height={params.height - params.margin.bottom - y(ds.data[i])}
-            ></rect>
+            {#if ds.data[i]}
+                <rect 
+                    style="fill: {d3.schemeTableau10[j]}"
+                    x={x1(ds.label)}
+                    y={y(ds.data[i])}
+                    width={x1.bandwidth()}
+                    height={params.height - params.margin.bottom - y(ds.data[i])}
+                ></rect>
+            {/if}
         {/each}
     </g>
 {/each}
