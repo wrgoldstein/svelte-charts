@@ -2,6 +2,7 @@ import * as d3 from "d3"
 import _ from "lodash"
 import moment from "moment"
 
+
 export class GroupedBar {
     constructor(data, params){
         this.data = data
@@ -47,10 +48,13 @@ export class Line {
                  .domain([lower, upper]).nice()
                  .range([this.height - this.margin.bottom, this.margin.top])
     }
+    
 
     x(){
-        let isValidDate = this.data.labels.every(v => moment(v)._isValid)
-        let scale = isValidDate ? d3.scaleTime : d3.scaleLinear
+        let isValidDate = this.data.labels.every(d => 
+            typeof d.getMonth === 'function' || d._isAMomentObject
+        )
+        let scale = (isValidDate) ? d3.scaleTime : d3.scaleLinear
         let x =scale()
                   .domain(d3.extent(this.data.labels))
                   .range([this.margin.left, this.width - this.margin.right])

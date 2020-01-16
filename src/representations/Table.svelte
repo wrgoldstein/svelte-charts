@@ -1,23 +1,20 @@
 <script>
     export let data, params
-    
+    import { formatLabel } from "../format.js"
     import JSONFormatter from 'json-formatter-js'
 
     function render(value){
         if (value == undefined){
             return ''
+        } else if (typeof value.getMonth === 'function'){
+            return formatLabel(value)
         }
         else if (typeof(value) == 'object'){
             const formatter = new JSONFormatter(value, 0)
             cell.appendChild(formatter.render())
             return ''
-        } else if (!isNaN(value)) {
-            if (Number.isInteger(value)) {
-                return value
-            }
-            return value.toFixed(3)
         }
-        return value
+        return formatLabel(value)
     }
 
     // data.datasets
@@ -64,7 +61,7 @@
         
         {#each data.labels as label, i}
             <tr>
-                <td>{label}</td>
+                <td>{render(label)}</td>
                 {#each data.datasets as ds}
                     <td>{render(ds.data[i])}</td>
                 {/each}

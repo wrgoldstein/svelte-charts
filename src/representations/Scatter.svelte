@@ -7,7 +7,8 @@ export let data,
             mouseout,
             params,
             x,
-            y
+            y,
+            svg
 </script>   
 
 {#each data.datasets as ds, i}

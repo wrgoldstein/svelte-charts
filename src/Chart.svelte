@@ -4,10 +4,11 @@
     import Axes from "./Axes.svelte"
     import representations from "./representations"
     import * as scales from "./scales.js"
+    import {formatLabel} from "./format.js"
 
     export let kind, data
 
-    let tooltip, xaxis, yaxis
+    let tooltip, xaxis, yaxis, svg
 
     let css_id = Math.random().toString(36).substr(2, 5)
 
@@ -17,6 +18,7 @@
     let margin = {top: 10, right: 10, bottom: 20, left: 40}
     
     let params = { width, height, margin }
+    let key = 0
 
 	window._ = _
     window.d3 = d3
@@ -25,25 +27,36 @@
     let sc, y, y_ticks, x, x_ticks
 
     $:{
-        sc = new scales[kind](data, params)
-        y = sc.y()
-        x = sc.x()
+        if (data){
+            sc = new scales[kind](data, params)
+            y = sc.y()
+            x = sc.x()
+            key++
+            window.x = x
+            window.data = data
+        }
     }
 
     function mouseover(i) {
         return (e) => {
             let innerHTML = data.datasets.map((d,m) => 
-                `<span style='display: flex;'>
-                    <div style='
-                        background-color: ${d3.schemeTableau10[m]}; 
-                        width: 10px; 
-                        height: auto;
-                        margin: 1px; 
-                        margin-right: 4px;'></div>
-                    ${d.label}: ${d.data[i].toFixed(3)}
-                </span>`
+                d.data[i] 
+                    ? 
+                        `<span style='display: flex;'>
+                            <div style='
+                                background-color: ${d3.schemeTableau10[m]}; 
+                                width: 10px; 
+                                height: auto;
+                                margin: 1px; 
+                                margin-right: 4px;'></div>
+                            ${d.label}: ${d.data[i].toFixed(3)}
+                        </span>`
+                    : ""
             ).join("\n")
-            tooltip.innerHTML = `<div style='display: flex; flex-direction: column;'>${innerHTML}</div>`
+            tooltip.innerHTML = `<div style='display: flex; flex-direction: column;'>
+                <div>${formatLabel(data.labels[i])}</div>
+                ${innerHTML}
+            </div>`
             tooltip.style = `
                 display: inline-block;
                 left: ${e.x+10}px;
@@ -56,24 +69,28 @@
     }
 </script>        
 
-<div class="container">
-	<div 
-		class="Chart" 
-		style="
-			width: {width}px;
-			height: {height}px;
-		">
-        {#if kind == 'Table'}
-            <svelte:component this={representations[kind]} {data} {params}/>
-        {:else}
-            <svg width={width} height={height}>
-                <svelte:component this={representations[kind]} {data} {params} {mouseover} {mouseout} {x} {y}/>
-                <Axes {kind} {x} {y} {css_id} {params}/>
-            </svg>
-        {/if}
-	</div>
-    <div bind:this={tooltip} class="tooltip"></div>
-</div>
+{#if data}
+    <div class="container">
+        <div 
+            class="Chart" 
+            style="
+                width: {width}px;
+                height: {height}px;
+            ">
+            {#if kind == 'Table'}
+                <svelte:component this={representations[kind]} {data} {params}/>
+            {:else}
+                <svg bind:this={svg} width={width} height={height}>
+                    {#each [key] as k (k)}
+                        <svelte:component this={representations[kind]} {svg} {data} {params} {mouseover} {mouseout} {x} {y}/>
+                        <Axes {kind} {x} {y} {css_id} {params}/>
+                    {/each}
+                </svg>
+            {/if}
+        </div>
+        <div bind:this={tooltip} class="tooltip"></div>
+    </div>
+{/if}
 
 <style>
 	.container {

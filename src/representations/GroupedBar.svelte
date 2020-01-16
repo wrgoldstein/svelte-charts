@@ -7,7 +7,8 @@ export let data,
             mouseout,
             params,
             x,
-            y
+            y,
+            svg
 
 $: x0 = x.x0
 $: x1 = x.x1
