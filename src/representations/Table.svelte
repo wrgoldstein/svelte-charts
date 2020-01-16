@@ -6,19 +6,16 @@
     function render(value){
         if (value == undefined){
             return ''
-        } else if (typeof value.getMonth === 'function'){
+        } else if (typeof value.getMonth === 'function' || value._isAMomentObject){
             return formatLabel(value)
         }
         else if (typeof(value) == 'object'){
             const formatter = new JSONFormatter(value, 0)
-            cell.appendChild(formatter.render())
-            return ''
+            return formatter.render()
         }
         return formatLabel(value)
     }
 
-    // data.datasets
-    // 
 </script>
 <style>
     .table-wrapper {
