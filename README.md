@@ -15,7 +15,7 @@ and to create a chart component:
 
 ```svelte
 <script>
-import { Chart } from "
+import { Chart } from "svelte-charts"
 
 let data = {
     labels: [1,2,3],
