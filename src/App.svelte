@@ -71,7 +71,10 @@
 				<option value='Categorical'>Categorical</option>
 			</select>
 		</div>
-		<Chart {data} {kind}/>
+		<div class="chart-container">
+			<Chart {data} {kind}/>
+		</div>
+		
 	</div>
 </main>
 
@@ -88,6 +91,11 @@
 		text-transform: uppercase;
 		font-size: 4em;
 		font-weight: 100;
+	}
+
+	.chart-container {
+		width: 600px;
+		height: 250px;
 	}
 
 	@media (min-width: 640px) {

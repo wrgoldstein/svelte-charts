@@ -6,9 +6,11 @@ export let data,
             mouseover, 
             mouseout,
             params,
+            svg,
             x,
-            y,
-            svg
+            y
+
+svg // silence warnings
 
 function offSet(i,j){
     return _.sum(data.datasets.map((ds,k) => k < j ? ds.data[i] : 0))

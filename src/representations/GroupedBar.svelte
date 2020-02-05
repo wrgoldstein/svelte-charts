@@ -6,9 +6,11 @@ export let data,
             mouseover, 
             mouseout,
             params,
+            svg,
             x,
-            y,
-            svg
+            y
+
+svg // silence warnings
 
 $: x0 = x.x0
 $: x1 = x.x1

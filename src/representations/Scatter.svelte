@@ -6,9 +6,13 @@ export let data,
             mouseover, 
             mouseout,
             params,
+            svg,
             x,
-            y,
-            svg
+            y
+
+params
+svg
+
 </script>   
 
 {#each data.datasets as ds, i}

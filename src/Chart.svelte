@@ -6,34 +6,32 @@
     import * as scales from "./scales.js"
     import {formatLabel} from "./format.js"
 
-    export let kind, data
+    export let kind
+    export let data
 
-    let tooltip, xaxis, yaxis, svg
+    let tooltip, xaxis, yaxis, svg, ticks
+    let height
+    let width
 
     let css_id = Math.random().toString(36).substr(2, 5)
 
 	// setup chart
-	let width = 500
-	let height = 300
-    let margin = {top: 10, right: 10, bottom: 20, left: 40}
+    let margin = {top: 20, right: 40, bottom: 60, left: 40}
     
     let params = { width, height, margin }
     let key = 0
-
-	window._ = _
-    window.d3 = d3
 
     // calc y axis
     let sc, y, y_ticks, x, x_ticks
 
     $:{
         if (data){
+            params = { width, height, margin }
             sc = new scales[kind](data, params)
             y = sc.y()
             x = sc.x()
+            ticks = data.labels.filter((d,i) => d3.ticks(0, data.labels.length, 5).includes(i))
             key++
-            window.x = x
-            window.data = data
         }
     }
 
@@ -59,8 +57,8 @@
             </div>`
             tooltip.style = `
                 display: inline-block;
-                left: ${e.x+10}px;
-                top: ${e.y}px;`
+                left: ${e.x - margin.left + 20}px;
+                top: ${e.y - height}px;`
         }        
     }
 
@@ -69,42 +67,44 @@
     }
 </script>        
 
-{#if data}
-    <div class="container">
-        <div 
-            class="Chart" 
-            style="
-                width: {width}px;
-                height: {height}px;
-            ">
-            {#if kind == 'Table'}
-                <svelte:component this={representations[kind]} {data} {params}/>
-            {:else}
-                <svg bind:this={svg} width={width} height={height}>
-                    {#each [key] as k (k)}
-                        <svelte:component this={representations[kind]} {svg} {data} {params} {mouseover} {mouseout} {x} {y}/>
-                        <Axes {kind} {x} {y} {css_id} {params}/>
-                    {/each}
-                </svg>
-            {/if}
-        </div>
-        <div bind:this={tooltip} class="tooltip"></div>
+<div class="container" bind:offsetWidth={width} bind:offsetHeight={height}>
+    <div
+        class="Chart"
+        style="
+            width: {width}px;
+            height: {height}px;
+        ">
+        {#if data === undefined}
+            <span></span>
+        {:else if kind == 'Table'}
+            <svelte:component this={representations[kind]} {data} {params}/>
+        {:else}
+            <svg bind:this={svg} width={width} height={height}>
+                {#each [key] as k (k)}
+                    <svelte:component this={representations[kind]} {svg} {data} {params} {mouseover} {mouseout} {x} {y}/>
+                    <Axes {kind} {x} {y} {css_id} {params} {ticks}/>
+                {/each}
+            </svg>
+        {/if}
     </div>
-{/if}
+    <div bind:this={tooltip} class="tooltip"></div>
+</div>
 
 <style>
 	.container {
 		padding: 1em;
 		display: inline-block;
 		background-color: aliceblue;
+        height: 100%;
+        width: 100%;
 	}
 
 	.Chart {
 		position: relative;
-		padding-left: 40px;
+		/* padding-left: 40px;
 		padding-bottom: 40px;
 		margin-right: 40px;
-		margin-top: 40px;
+		margin-top: 40px; */
 	}
 
 	svg {
