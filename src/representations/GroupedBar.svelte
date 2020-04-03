@@ -11,8 +11,7 @@ export let data,
             y
 
 svg // silence warnings
-
-$: x0 = x.x0
+$: x0 = x.x0;
 $: x1 = x.x1
 </script>        
 

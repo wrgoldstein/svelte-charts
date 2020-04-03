@@ -12,8 +12,9 @@ export class GroupedBar {
     }
 
     y(){
+        const max = d3.max(this.data.datasets, (ds) => d3.max(ds.data) )
         return d3.scaleLinear()
-            .domain(d3.extent(_.flatMap(this.data.datasets, (ds) => ds.data)).reverse()).nice()
+            .domain([max, 0]).nice()
             .range([this.margin.top, this.height-this.margin.bottom])
     }
 

@@ -25,11 +25,10 @@ function thismouseover(e){
     }
     mouseover(xi)(ev)
 }
-
 </script>   
 
 {#each data.datasets as ds, i}
-    <g style="stroke: {d3.schemeTableau10[i]};">
-        <path on:mouseover={thismouseover} on:mouseout={mouseout} d={line(ds.data)} />
-    </g>
+  <g style="stroke: {d3.schemeTableau10[i]};">
+    <path on:mouseover={thismouseover} on:mouseout={mouseout} d={line(ds.data)} />
+  </g>
 {/each}

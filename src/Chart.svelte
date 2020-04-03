@@ -3,19 +3,22 @@
     import * as d3 from "d3"
     import Axes from "./Axes.svelte"
     import representations from "./representations"
+    import Tooltip from "./Tooltip.svelte"
     import * as scales from "./scales.js"
-    import {formatLabel} from "./format.js"
+    
 
-    export let kind, data, title
+    export let kind, data
+    export let title = undefined
 
-    let tooltip, xaxis, yaxis, svg, ticks
+    let tooltip_index, mouseover_event
+    let xaxis, yaxis, svg, ticks
     let height
     let width
 
     let css_id = Math.random().toString(36).substr(2, 5)
 
 	// setup chart
-    let margin = {top: 20, right: 40, bottom: 60, left: 40}
+    let margin = {top: 60, right: 40, bottom: 60, left: 80}
     
     let params = { width, height, margin }
     let key = 0
@@ -35,46 +38,28 @@
     }
 
     function mouseover(i) {
-        return (e) => {
-            let innerHTML = data.datasets.map((d,m) => 
-                d.data[i] 
-                    ? 
-                        `<span style='display: flex;'>
-                            <div style='
-                                background-color: ${d3.schemeTableau10[m]}; 
-                                width: 10px; 
-                                height: auto;
-                                margin: 1px; 
-                                margin-right: 4px;'></div>
-                            ${d.label}: ${d.data[i].toFixed(3)}
-                        </span>`
-                    : ""
-            ).join("\n")
-            tooltip.innerHTML = `<div style='display: flex; flex-direction: column;'>
-                <div>${formatLabel(data.labels[i])}</div>
-                ${innerHTML}
-            </div>`
-            tooltip.style = `
-                display: inline-block;
-                left: ${e.x - margin.left + 20}px;
-                top: ${e.y - height}px;`
-        }        
+      return (e) => {
+        tooltip_index = i
+        mouseover_event = e
+      }
     }
 
     function mouseout() {
-        tooltip.style = "display: none;"
+        mouseover_event = undefined
     }
 </script>        
 
 <div class="container" bind:offsetWidth={width} bind:offsetHeight={height}>
-  <h3>{title || ''}</h3>
+    {#if title }
+      <p class="title">{title || ''}</p>
+    {/if}
     <div
         class="Chart"
         style="
             width: {width}px;
             height: {height}px;
         ">
-        {#if data === undefined}
+        {#if data === undefined || !params.width}
             <span></span>
         {:else if kind == 'Table'}
             <svelte:component this={representations[kind]} {data} {params}/>
@@ -87,12 +72,11 @@
             </svg>
         {/if}
     </div>
-    <div bind:this={tooltip} class="tooltip"></div>
+    <Tooltip {data} {tooltip_index} {mouseover_event}/>
 </div>
 
 <style>
 	.container {
-		padding: 1em;
 		display: inline-block;
 		background-color: aliceblue;
         height: 100%;
@@ -100,45 +84,21 @@
 	}
 
 	.Chart {
-		position: relative;
-		/* padding-left: 40px;
-		padding-bottom: 40px;
-		margin-right: 40px;
-		margin-top: 40px; */
+		position: absolute;
+    left: 0;
+    top: 0;
 	}
 
 	svg {
 		fill: none;
-        stroke-linecap: butt;
+    stroke-linecap: butt;
 		display: block;
-        stroke-width: 3px;
-        stroke-linejoin: round;
+    stroke-width: 3px;
+    stroke-linejoin: round;
 	}
 
-  .tooltip {
-      display: none;
-      position: absolute;
-      text-align: center;
-      padding: 8px;
-      margin-top: -20px;
-      font: 10px sans-serif;
-      background: black;
-      color: white;
-      pointer-events: none;
-  }
-
-  .tooltip::after {
-      content: " ";
-      position: absolute;
-      top: 50%;
-      right: 100%; /* To the left of the tooltip */
-      margin-top: -5px;
-      border-width: 5px;
-      border-style: solid;
-      border-color: transparent black transparent transparent;
-  }
-
-  .xlabel {
-    margin-top: -20px;
+  .title {
+    margin: 0;
+    font-size: 1.2em;
   }
 </style>

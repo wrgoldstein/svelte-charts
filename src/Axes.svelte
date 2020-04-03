@@ -17,9 +17,10 @@
         d3.axisLeft(y)(d3.select(`#yaxis-${css_id}`))
     })
 </script>
-
-    <g id="xaxis-{css_id}" class="axis" transform="translate(0, {params.height - params.margin.bottom})"></g>
-    <g id="yaxis-{css_id}" class="axis" transform="translate({params.margin.left}, 0)"></g>
+{#if params.width }
+  <g id="xaxis-{css_id}" class="axis" transform="translate(0, {params.height - params.margin.bottom})"></g>
+  <g id="yaxis-{css_id}" class="axis" transform="translate({params.margin.left}, 0)"></g>
+{/if}
 <style>
 .axis {
     stroke-width: 1px;
