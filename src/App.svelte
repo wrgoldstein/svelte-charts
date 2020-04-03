@@ -94,7 +94,8 @@
 	}
 
 	.chart-container {
-		width: 600px;
+    margin: auto;
+		width: 80%;
 		height: 250px;
 	}
 

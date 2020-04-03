@@ -6,8 +6,7 @@
     import * as scales from "./scales.js"
     import {formatLabel} from "./format.js"
 
-    export let kind
-    export let data
+    export let kind, data, title
 
     let tooltip, xaxis, yaxis, svg, ticks
     let height
@@ -68,6 +67,7 @@
 </script>        
 
 <div class="container" bind:offsetWidth={width} bind:offsetHeight={height}>
+  <h3>{title || ''}</h3>
     <div
         class="Chart"
         style="
@@ -115,26 +115,30 @@
         stroke-linejoin: round;
 	}
 
-    .tooltip {
-        display: none;
-        position: absolute;
-        text-align: center;
-        padding: 8px;
-        margin-top: -20px;
-        font: 10px sans-serif;
-        background: black;
-        color: white;
-        pointer-events: none;
-    }
+  .tooltip {
+      display: none;
+      position: absolute;
+      text-align: center;
+      padding: 8px;
+      margin-top: -20px;
+      font: 10px sans-serif;
+      background: black;
+      color: white;
+      pointer-events: none;
+  }
 
-    .tooltip::after {
-        content: " ";
-        position: absolute;
-        top: 50%;
-        right: 100%; /* To the left of the tooltip */
-        margin-top: -5px;
-        border-width: 5px;
-        border-style: solid;
-        border-color: transparent black transparent transparent;
-    }
+  .tooltip::after {
+      content: " ";
+      position: absolute;
+      top: 50%;
+      right: 100%; /* To the left of the tooltip */
+      margin-top: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: transparent black transparent transparent;
+  }
+
+  .xlabel {
+    margin-top: -20px;
+  }
 </style>
