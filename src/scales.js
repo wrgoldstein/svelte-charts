@@ -86,5 +86,6 @@ export class StackedBar {
     }
 }
 
+export let Bar = GroupedBar
 export let Scatter = Line
 export let Table = Line
